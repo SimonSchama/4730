@@ -16,9 +16,12 @@ namespace MulitATB
     /// </summary>
     public class Game1 : Game
     {
+        private SpriteFont font;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-
+        Texture2D guy, cursor;
+        int dpadHeldFrames;
+        int curpos;
         public Game1()
             : base()
         {
@@ -35,7 +38,8 @@ namespace MulitATB
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            dpadHeldFrames = 0;
+            curpos = 0;
             base.Initialize();
         }
 
@@ -47,7 +51,8 @@ namespace MulitATB
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            guy = Content.Load<Texture2D>("psychic1.png");
+            cursor = Content.Load <Texture2D>("cursor");
             // TODO: use this.Content to load your game content here
         }
 
@@ -69,6 +74,35 @@ namespace MulitATB
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            if (GamePad.GetState(PlayerIndex.One).DPad.Down == ButtonState.Pressed)
+            {
+                if (dpadHeldFrames == 0 || dpadHeldFrames == 5)
+                {
+                    curpos += 1;
+                    dpadHeldFrames = 1;
+                }
+                else
+                {
+                    dpadHeldFrames += 1;
+                }
+            }
+            else if (GamePad.GetState(PlayerIndex.One).DPad.Up == ButtonState.Pressed)
+            {
+                if (dpadHeldFrames == 0 || dpadHeldFrames == 5)
+                {
+                    curpos -= 1;
+                    dpadHeldFrames = 1;
+                }
+                else
+                {
+                    dpadHeldFrames += 1;
+                }
+            }
+            else
+            {
+                dpadHeldFrames = 0;
+            }
+
 
             // TODO: Add your update logic here
 
@@ -84,7 +118,11 @@ namespace MulitATB
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            spriteBatch.Begin();
 
+            spriteBatch.Draw(guy, new Rectangle(0, 0, 64, 64), Color.White);
+            spriteBatch.Draw(cursor, new Rectangle(0, 10 * curpos, 16, 16), Color.Wheat);
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }
